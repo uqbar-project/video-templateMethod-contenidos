@@ -1,28 +1,37 @@
-# .github/workflows/build.yml
-# GitHub Actions documentation
-# => https://docs.github.com/en/actions
 name: build
 
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
   gradle:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-java@v1
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-java@v6.1.0
         with:
-          java-version: 14
+          distribution: zulu
+          java-version: '14'
 
-      # Execute Gradle commands in GitHub Actions workflows
-      # => https://github.com/marketplace/actions/gradle-command
-      - uses: eskatos/gradle-command-action@v1
+      - uses: gradle/actions/setup-gradle@v6.4.1
         with:
-          arguments: runOnGitHub
-          wrapper-cache-enabled: true
-          dependencies-cache-enabled: true
-          configuration-cache-enabled: true
+          cache-provider: basic
 
-      # Send JaCoCo reports to codecov
-      - run: bash <(curl -s https://codecov.io/bash)
+      - name: Run tests and generate coverage
+        run: ./gradlew runOnGitHub --no-daemon
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v7.1.1
+        with:
+          use_oidc: true
+          files: build/reports/jacoco/test/jacocoTestReport.xml
+          disable_search: true
+          fail_ci_if_error: true

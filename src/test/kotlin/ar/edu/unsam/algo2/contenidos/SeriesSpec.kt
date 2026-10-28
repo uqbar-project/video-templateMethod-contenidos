@@ -2,6 +2,8 @@ package ar.edu.unsam.algo2.contenidos
 
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
+import io.kotest.matchers.booleans.shouldBeFalse
+import io.kotest.matchers.booleans.shouldBeTrue
 import io.kotest.matchers.shouldBe
 import java.time.LocalDate
 
@@ -12,19 +14,20 @@ class SeriesSpec : DescribeSpec({
       // Arrange
       val serieSinPresupuesto = Serie(presupuesto = 2)
       // Assert
-      serieSinPresupuesto.esInteresante() shouldBe false
+      serieSinPresupuesto.esInteresante().shouldBeFalse()
     }
     it("serie con muchas temporadas no es interesante") {
       // Arrange
       val serieMuchasTemporadas = Serie(presupuesto = 6, temporadas = 5)
       // Assert
-      serieMuchasTemporadas.esInteresante() shouldBe false
+      serieMuchasTemporadas.esInteresante().shouldBeFalse()
     }
     it("serie con pocas temporadas y con buen presupuesto es interesante") {
       // Arrange
       val serieInteresante = Serie(presupuesto = 6, temporadas = 4)
       // Assert
-      serieInteresante.esInteresante() shouldBe true
+      serieInteresante.esInteresante().shouldBeTrue()
+
     }
   }
 })
